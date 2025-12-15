@@ -1,12 +1,15 @@
 package com.example.demo;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
-public interface AttendanceRepository extends MongoRepository<Attendance, String> {
+@Repository
+public interface AttendanceRepository extends JpaRepository<Attendance, UUID> {
     Optional<Attendance> findByEmployeeIdAndDate(String employeeId, LocalDate date);
     List<Attendance> findAllByDate(LocalDate date);
 }

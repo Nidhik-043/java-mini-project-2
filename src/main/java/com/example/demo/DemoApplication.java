@@ -4,9 +4,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.index.Index;
 
 @SpringBootApplication
 public class DemoApplication {
@@ -16,23 +13,12 @@ public class DemoApplication {
     }
 
     @Bean
-    CommandLineRunner ensureIndexesAndSeed(
-            MongoTemplate mongoTemplate,
-            StaffRepository staffRepository
-    ) {
+    CommandLineRunner seedDatabase(StaffRepository staffRepository) {
         return args -> {
-            mongoTemplate.indexOps(Staff.class)
-                    .ensureIndex(new Index().on("employeeId", Sort.Direction.ASC).unique());
-
-            mongoTemplate.indexOps(Attendance.class)
-                    .ensureIndex(new Index().on("employeeId", Sort.Direction.ASC));
-
-            mongoTemplate.indexOps(Attendance.class)
-                    .ensureIndex(new Index().on("date", Sort.Direction.ASC));
-
             if (staffRepository.findByEmployeeId("EMP001").isEmpty()) {
-                Staff s = new Staff(null, "John Doe", "EMP001", "Sales", null);
+                Staff s = new Staff("John Doe", "EMP001", "Sales", null);
                 staffRepository.save(s);
+                System.out.println("Seeded database with sample staff: EMP001");
             }
         };
     }

@@ -1,20 +1,47 @@
 package com.example.demo;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-
+import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
-@Document(collection = "attendance")
+@Entity
+@Table(name = "attendance",
+       uniqueConstraints = @UniqueConstraint(columnNames = {"employee_id", "date"}))
 public class Attendance {
 
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
+
+    @Column(name = "employee_id", nullable = false)
     private String employeeId;
+
+    @Column(nullable = false)
     private LocalDate date;
+
+    @Column(name = "sign_in_time")
     private LocalDateTime signInTime;
+
+    @Column(name = "sign_out_time")
     private LocalDateTime signOutTime;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 
     public Attendance() {}
 
@@ -23,8 +50,8 @@ public class Attendance {
         this.date = date;
     }
 
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
+    public UUID getId() { return id; }
+    public void setId(UUID id) { this.id = id; }
 
     public String getEmployeeId() { return employeeId; }
     public void setEmployeeId(String employeeId) { this.employeeId = employeeId; }
